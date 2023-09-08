@@ -21,19 +21,3 @@ const start = async () => {
 };
 
 start();
-
-import jwt from "jsonwebtoken";
-const token = jwt.sign(
-  {
-    userId: "SOME USER ID",
-    email: "SOME EMAIL",
-  },
-  process.env.JWT_SECRET,
-  {
-    expiresIn: process.env.JWT_EXPIRES,
-    issuer: process.env.JWT_ISSUER,
-    jwtid: "SOME IDENTIFIER",
-  }
-);
-
-console.log(token);
