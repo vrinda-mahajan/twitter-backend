@@ -4,7 +4,6 @@ dotenv.config();
 import express from "express";
 const app = express();
 
-console.log("why");
 const port = process.env.PORT || 3000;
 const start = async () => {
   try {
@@ -22,3 +21,4 @@ const start = async () => {
 };
 
 start();
+
