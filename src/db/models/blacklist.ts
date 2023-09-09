@@ -25,7 +25,7 @@ const BlacklistSchema = new Schema(
 
 export interface BlacklistDocument extends Document {
   object: string;
-  kind: string;
+  kind: BlacklistKind;
 }
 
 export default model<BlacklistDocument>("Blacklist", BlacklistSchema);
