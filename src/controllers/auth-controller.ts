@@ -11,6 +11,7 @@ import {
 import {
   UserCreationParams,
   UserAndCredetials,
+  LoginParams,
 } from "../services/models/auth-model";
 import AuthService from "../services/auth-service";
 
@@ -24,6 +25,15 @@ export class AuthController extends Controller {
   ): Promise<UserAndCredetials> {
     this.setStatus(StatusCodes.CREATED);
     return new AuthService().register(requestBody);
+  }
+
+  @Post("login")
+  @OperationId("loginUser")
+  public async login(
+    @Body() requestBody: LoginParams
+  ): Promise<UserAndCredetials> {
+    this.setStatus(StatusCodes.OK);
+    return new AuthService().login(requestBody);
   }
 
   @Post("dummy")
