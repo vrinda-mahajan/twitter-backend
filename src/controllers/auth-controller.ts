@@ -1,5 +1,13 @@
 import { StatusCodes } from "http-status-codes";
-import { Body, Route, OperationId, Tags, Post, Controller } from "tsoa";
+import {
+  Body,
+  Route,
+  OperationId,
+  Tags,
+  Post,
+  Controller,
+  Security,
+} from "tsoa";
 import {
   UserCreationParams,
   UserAndCredetials,
@@ -16,5 +24,13 @@ export class AuthController extends Controller {
   ): Promise<UserAndCredetials> {
     this.setStatus(StatusCodes.CREATED);
     return new AuthService().register(requestBody);
+  }
+
+  @Post("dummy")
+  @OperationId("dummy")
+  @Security("jwt")
+  public async dummy(): Promise<void> {
+    this.setStatus(StatusCodes.OK);
+    return Promise.resolve();
   }
 }
