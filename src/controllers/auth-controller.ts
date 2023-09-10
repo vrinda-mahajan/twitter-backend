@@ -2,9 +2,11 @@ import { StatusCodes } from "http-status-codes";
 import {
   Body,
   Route,
+  Delete,
   OperationId,
   Tags,
   Post,
+  Request,
   Controller,
   Security,
 } from "tsoa";
@@ -14,6 +16,7 @@ import {
   LoginParams,
 } from "../services/models/auth-model";
 import AuthService from "../services/auth-service";
+import { Request as ExpressRequest } from "express";
 
 @Route("/api/v1/auth")
 @Tags("Auth")
@@ -34,6 +37,15 @@ export class AuthController extends Controller {
   ): Promise<UserAndCredetials> {
     this.setStatus(StatusCodes.OK);
     return new AuthService().login(requestBody);
+  }
+
+  @Delete("logout")
+  @OperationId("logoutUser")
+  @Security("jwt")
+  public async logout(@Request() request: ExpressRequest): Promise<void> {
+    this.setStatus(StatusCodes.NO_CONTENT);
+    const user = request.user as { jti: string };
+    await new AuthService().logout(user.jti);
   }
 
   @Post("dummy")

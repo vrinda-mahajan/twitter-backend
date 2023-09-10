@@ -6,6 +6,7 @@ import {
   UserCreationParams,
 } from "./models/auth-model";
 import { UnauthorizedError } from "../errors";
+import Blacklist from "../db/models/blacklist";
 
 export default class AuthService {
   public async register(
@@ -50,5 +51,9 @@ export default class AuthService {
       token,
       refresh,
     };
+  }
+
+  public async logout(jti: string): Promise<void> {
+    await Blacklist.create({ object: jti, kind: "jti" });
   }
 }
