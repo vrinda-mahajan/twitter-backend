@@ -22,6 +22,9 @@ app.get("/swagger.json", (_, res) => {
 import { RegisterRoutes } from "./routes/routes";
 RegisterRoutes(app);
 
+import { errorMiddlewareHandler } from "./middleware/error-handler";
+app.use(errorMiddlewareHandler);
+
 const port = process.env.PORT || 3000;
 const start = async () => {
   try {
