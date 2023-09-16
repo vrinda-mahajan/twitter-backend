@@ -14,7 +14,7 @@ import {
   getUserIdProfilePhotoName,
   getUserIdProfilePhotoPath,
 } from "../controllers/utils";
-import { mkdir, stat } from "node:fs/promises";
+import { mkdir, stat, unlink } from "node:fs/promises";
 
 export default class ProfileService {
   public async get(userId: string): Promise<ProfileModel> {
@@ -53,7 +53,6 @@ export default class ProfileService {
   ): Promise<void> {
     const { photo } = req.files;
     if (photo.mimetype !== "image/jpeg") {
-      console.log(photo.mimetype);
       throw new InvalidMimitypeError();
     }
 
@@ -92,6 +91,15 @@ export default class ProfileService {
         photoName,
         options,
       };
+    } catch {
+      throw new PhotoNotFoundError();
+    }
+  }
+
+  public async deletePhoto(userId: string) {
+    const photoPath = getUserIdProfilePhotoPath(userId);
+    try {
+      await unlink(photoPath);
     } catch {
       throw new PhotoNotFoundError();
     }

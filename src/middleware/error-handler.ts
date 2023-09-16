@@ -9,7 +9,7 @@ export const errorMiddlewareHandler = (
 ) => {
   let customError = {
     message: err.message,
-    statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+    statusCode: err.statuscode || StatusCodes.INTERNAL_SERVER_ERROR,
   };
   if (err.name === "MongoServerError" && err.code === 11000) {
     customError.message = "User already exists!";
@@ -24,6 +24,6 @@ export const errorMiddlewareHandler = (
 interface Error {
   message: string;
   name: string;
-  statusCode?: number;
+  statuscode?: number;
   code?: number;
 }
