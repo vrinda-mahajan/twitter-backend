@@ -15,6 +15,7 @@ import {
 import { StatusCodes } from "http-status-codes";
 import ProfileService from "../services/profile-service";
 import { Profile } from "../services/models/profile-model";
+import { NoPhotoUploadedError } from "../errors";
 
 @Route("/api/v1/profile")
 @Tags("Profile")
@@ -39,5 +40,22 @@ export class ProfileController extends Controller {
     this.setStatus(StatusCodes.OK);
     const user = request.user as { id: string };
     return new ProfileService().set(user.id, requestBody);
+  }
+
+  @Post("photo")
+  @OperationId("setProfilePhoto")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.BAD_REQUEST, "No photo uploaded!")
+  @Response(StatusCodes.BAD_REQUEST, "Invalid Mimetype!")
+  public async setProfilePhoto(
+    @Request() request: ExpressRequest
+  ): Promise<void> {
+    if (!request.files || Object.keys(request.files).length === 0) {
+      throw new NoPhotoUploadedError();
+    }
+    this.setStatus(StatusCodes.OK);
+    const user = request.user as { id: string };
+    return new ProfileService().setPhoto(user.id, request as any);
   }
 }

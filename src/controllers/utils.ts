@@ -6,6 +6,6 @@ export const getUserIdProfilePhotoName = function (userId: string): string {
   return userId + ".jpg";
 };
 
-export const getIserIdProfilePhotoPath = function (userId: string): string {
+export const getUserIdProfilePhotoPath = function (userId: string): string {
   return getProfilePhotoRootDir() + getUserIdProfilePhotoName(userId);
 };

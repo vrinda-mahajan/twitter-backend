@@ -19,6 +19,14 @@ app.get("/swagger.json", (_, res) => {
   res.sendFile(__dirname + "/tsoa/tsoa.json");
 });
 
+import fileUpload from "express-fileupload";
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
+
 import { RegisterRoutes } from "./routes/routes";
 RegisterRoutes(app);
 
