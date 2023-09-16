@@ -1,4 +1,7 @@
-import { Request as ExpressRequest } from "express";
+import {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 import {
   Body,
   Controller,
@@ -57,5 +60,27 @@ export class ProfileController extends Controller {
     this.setStatus(StatusCodes.OK);
     const user = request.user as { id: string };
     return new ProfileService().setPhoto(user.id, request as any);
+  }
+
+  @Get("photo/{userId}")
+  @OperationId("getProfilePhoto")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.NOT_FOUND, "Photo not found!")
+  public async getProfilePhoto(
+    @Path() userId: string,
+    @Request() request: ExpressRequest
+  ): Promise<void> {
+    const photoInfo = await new ProfileService().getPhoto(userId);
+    const response = request.res as ExpressResponse;
+    return new Promise<void>((resolve, reject) => {
+      response.sendFile(photoInfo.photoName, photoInfo.options, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }

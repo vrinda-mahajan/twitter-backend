@@ -1,12 +1,20 @@
-import { InvalidMimitypeError, UserProfileNotFoundError } from "../errors";
+import {
+  InvalidMimitypeError,
+  PhotoNotFoundError,
+  UserProfileNotFoundError,
+} from "../errors";
 import Profile from "../db/models/profile";
-import { Profile as ProfileModel } from "./models/profile-model";
+import {
+  Profile as ProfileModel,
+  ProfilePhotoInfo,
+} from "./models/profile-model";
 import { UploadedFile } from "express-fileupload";
 import {
   getProfilePhotoRootDir,
+  getUserIdProfilePhotoName,
   getUserIdProfilePhotoPath,
 } from "../controllers/utils";
-import { mkdir } from "node:fs/promises";
+import { mkdir, stat } from "node:fs/promises";
 
 export default class ProfileService {
   public async get(userId: string): Promise<ProfileModel> {
@@ -61,5 +69,31 @@ export default class ProfileService {
         reject();
       }
     });
+  }
+
+  public async getPhoto(userId: string): Promise<ProfilePhotoInfo> {
+    const photoPath = getUserIdProfilePhotoPath(userId);
+    try {
+      const status = await stat(photoPath);
+      const isFile = status.isFile();
+      if (!isFile) {
+        throw new Error();
+      }
+      const photoName = getUserIdProfilePhotoName(userId);
+      const options = {
+        root: getProfilePhotoRootDir(),
+        dotfiles: "deny",
+        headers: {
+          "x-timestamp": Date.now(),
+          "x-sent": true,
+        },
+      };
+      return {
+        photoName,
+        options,
+      };
+    } catch {
+      throw new PhotoNotFoundError();
+    }
   }
 }
