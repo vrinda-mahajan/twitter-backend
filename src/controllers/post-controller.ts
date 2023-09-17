@@ -9,6 +9,7 @@ import {
 import {
   Body,
   Controller,
+  Delete,
   OperationId,
   Path,
   Post,
@@ -51,5 +52,19 @@ export class PostsController extends Controller {
     const user = request.user as AuthenticatedUser;
     const userId = user.id;
     return new PostService().reactToPost(userId, postId, body);
+  }
+
+  @Delete("/react/{postId}")
+  @OperationId("unreactToPost")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.NOT_FOUND, "Reaction not found.")
+  public async unreactToPost(
+    @Path() postId: string,
+    @Request() request: ExpressRequest
+  ): Promise<ReactionModel> {
+    const user = request.user as AuthenticatedUser;
+    const userId = user.id;
+    return new PostService().unreactToPost(userId, postId);
   }
 }

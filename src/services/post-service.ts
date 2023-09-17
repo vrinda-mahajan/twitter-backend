@@ -2,6 +2,7 @@ import {
   InvalidInputError,
   OriginalPostIdMissingError,
   PostNotFoundError,
+  ReactionNotFoundError,
 } from "../errors";
 import Post from "../db/models/post";
 import {
@@ -60,6 +61,17 @@ export default class PostService {
       { userId, postId, type: params.type },
       { upsert: true, new: true }
     );
+    return reaction.toJSON() as TSOAReactionModel;
+  }
+
+  public async unreactToPost(
+    userId: string,
+    postId: string
+  ): Promise<TSOAReactionModel> {
+    const reaction = await Reaction.findOneAndDelete({ userId, postId });
+    if (!reaction) {
+      throw new ReactionNotFoundError();
+    }
     return reaction.toJSON() as TSOAReactionModel;
   }
 }
