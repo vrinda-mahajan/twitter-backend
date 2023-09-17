@@ -106,6 +106,70 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PostType": {
+				"enum": [
+					"post",
+					"repost",
+					"reply"
+				],
+				"type": "string"
+			},
+			"PostModel": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"text": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/PostType"
+					},
+					"attachmentId": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"text",
+					"type",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePostParams": {
+				"properties": {
+					"text": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"originalPostId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"text",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Profile": {
 				"properties": {
 					"bio": {
@@ -279,6 +343,48 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/api/v1/posts": {
+			"post": {
+				"operationId": "createPost",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PostModel"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": ""
+					},
+					"400": {
+						"description": "Original PostId is missing."
+					}
+				},
+				"tags": [
+					"Posts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePostParams"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/v1/profile/info/{userId}": {

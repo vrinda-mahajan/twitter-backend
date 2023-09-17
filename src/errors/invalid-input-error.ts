@@ -4,6 +4,7 @@ import { CustomApiError } from "./custom-api-errors";
 export class InvalidInputError extends CustomApiError {
   constructor(inputName: string, expectedValue?: any) {
     let message = `Invalid input: ${inputName}`;
+    console.log("message",message)
     if (expectedValue) {
       message += ` (expected ${expectedValue})`;
     }

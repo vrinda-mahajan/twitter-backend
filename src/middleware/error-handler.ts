@@ -7,6 +7,7 @@ export const errorMiddlewareHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+  console.log(err)
   let customError = {
     message: err.message,
     statusCode: err.statuscode || StatusCodes.INTERNAL_SERVER_ERROR,
