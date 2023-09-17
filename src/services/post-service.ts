@@ -1,10 +1,17 @@
-import { InvalidInputError, OriginalPostIdMissingError } from "../errors";
+import {
+  InvalidInputError,
+  OriginalPostIdMissingError,
+  PostNotFoundError,
+} from "../errors";
 import Post from "../db/models/post";
 import {
   CreatePostParams,
+  CreateReactionParams,
   PostType,
+  Reaction as TSOAReactionModel,
   Post as TSOAPostModel,
 } from "./models/post-model";
+import Reaction from "../db/models/reaction";
 
 export default class PostService {
   public async createPost(
@@ -36,5 +43,23 @@ export default class PostService {
       default:
         throw new InvalidInputError("type", "PostType");
     }
+  }
+
+  public async reactToPost(
+    userId: string,
+    postId: string,
+    params: CreateReactionParams
+  ): Promise<TSOAReactionModel> {
+    const post = await Post.findById(postId);
+    if (!post) {
+      throw new PostNotFoundError();
+    }
+    const query = { userId, postId };
+    const reaction = await Reaction.findOneAndUpdate(
+      query,
+      { userId, postId, type: params.type },
+      { upsert: true, new: true }
+    );
+    return reaction.toJSON() as TSOAReactionModel;
   }
 }

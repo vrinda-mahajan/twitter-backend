@@ -19,3 +19,17 @@ export enum PostType {
   repost = "repost",
   reply = "reply",
 }
+
+export interface CreateReactionParams {
+  type: ReactionType;
+}
+export interface Reaction {
+  id: string;
+  userId: string;
+  postId: string;
+  type: ReactionType;
+}
+
+export enum ReactionType {
+  like = "like",
+}

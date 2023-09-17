@@ -2,12 +2,15 @@ import { Request as ExpressRequest } from "express";
 import { StatusCodes } from "http-status-codes";
 import {
   CreatePostParams,
+  CreateReactionParams,
   Post as PostModel,
+  Reaction as ReactionModel,
 } from "../services/models/post-model";
 import {
   Body,
   Controller,
   OperationId,
+  Path,
   Post,
   Request,
   Response,
@@ -33,5 +36,20 @@ export class PostsController extends Controller {
     this.setStatus(StatusCodes.CREATED);
     const user = request.user as AuthenticatedUser;
     return new PostService().createPost(user.id, body);
+  }
+
+  @Post("/react/{postId}")
+  @OperationId("reactToPost")
+  @Security("jwt")
+  @Response(StatusCodes.CREATED)
+  @Response(StatusCodes.NOT_FOUND, "Post not found.")
+  public async reactToPost(
+    @Path() postId: string,
+    @Request() request: ExpressRequest,
+    @Body() body: CreateReactionParams
+  ): Promise<ReactionModel> {
+    const user = request.user as AuthenticatedUser;
+    const userId = user.id;
+    return new PostService().reactToPost(userId, postId, body);
   }
 }
