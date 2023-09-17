@@ -1,5 +1,8 @@
 import {
+  InternalServerError,
   InvalidInputError,
+  InvalidMimitypeError,
+  NoPhotoUploadedError,
   OriginalPostIdMissingError,
   PostNotFoundError,
   ReactionNotFoundError,
@@ -11,9 +14,13 @@ import {
   PostType,
   Reaction as TSOAReactionModel,
   Post as TSOAPostModel,
+  Attachment as TSOAAttachmentModel,
 } from "./models/post-model";
 import Reaction from "../db/models/reaction";
-
+import { UploadedFile } from "express-fileupload";
+import Attachment from "../db/models/attachment";
+import { getAttachmentPath, getAttachmentRootDir } from "../controllers/utils";
+import { mkdir } from "node:fs/promises";
 export default class PostService {
   public async createPost(
     userId: string,
@@ -73,5 +80,51 @@ export default class PostService {
       throw new ReactionNotFoundError();
     }
     return reaction.toJSON() as TSOAReactionModel;
+  }
+
+  public async attachToPost(
+    userId: string,
+    postId: string,
+    req: { files: { photo: UploadedFile } }
+  ): Promise<TSOAAttachmentModel> {
+    const post = await Post.findOne({ _id: postId, userId })
+      .where("type")
+      .in(["post", "reply"])
+      .where("attachmentId")
+      .equals(null);
+
+    if (!post) {
+      throw new PostNotFoundError();
+    }
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+      throw new NoPhotoUploadedError();
+    }
+
+    const { photo } = req.files as unknown as { photo: UploadedFile };
+
+    if (photo.mimetype !== "image/jpeg") {
+      throw new InvalidMimitypeError();
+    }
+    
+    const attachment = await Attachment.create({
+      userId,
+      postId,
+      mimeType: photo.mimetype,
+    });
+    const attachmentId = attachment._id;
+    const uploadRootDir = getAttachmentRootDir();
+    const uploadPath = getAttachmentPath(attachmentId);
+
+    try {
+      await mkdir(uploadRootDir, { recursive: true });
+      await photo.mv(uploadPath);
+      post.attachmentId = attachmentId;
+      await post.save();
+      return attachment.toJSON() as TSOAAttachmentModel;
+    } catch {
+      await Attachment.findByIdAndDelete(attachmentId);
+      throw new InternalServerError();
+    }
   }
 }

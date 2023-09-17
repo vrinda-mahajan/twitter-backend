@@ -1,6 +1,7 @@
 import { Request as ExpressRequest } from "express";
 import { StatusCodes } from "http-status-codes";
 import {
+  Attachment as AttachmentModel,
   CreatePostParams,
   CreateReactionParams,
   Post as PostModel,
@@ -11,6 +12,7 @@ import {
   Controller,
   Delete,
   OperationId,
+  Patch,
   Path,
   Post,
   Request,
@@ -66,5 +68,23 @@ export class PostsController extends Controller {
     const user = request.user as AuthenticatedUser;
     const userId = user.id;
     return new PostService().unreactToPost(userId, postId);
+  }
+
+  @Patch("/{postId}")
+  @OperationId("attachToPost")
+  @Security("jwt")
+  @Response(StatusCodes.CREATED)
+  @Response(
+    StatusCodes.INTERNAL_SERVER_ERROR,
+    "Could not attach photo to post."
+  )
+  @Response(StatusCodes.NOT_FOUND, "Post not found.")
+  public async attachToPost(
+    @Path() postId: string,
+    @Request() request: ExpressRequest
+  ): Promise<AttachmentModel> {
+    const user = request.user as AuthenticatedUser;
+    const userId = user.id;
+    return new PostService().attachToPost(userId, postId, request as any);
   }
 }

@@ -212,6 +212,22 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"AttachmentModel": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"mimeType": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"mimeType"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Profile": {
 				"properties": {
 					"bio": {
@@ -494,6 +510,50 @@
 					},
 					"404": {
 						"description": "Reaction not found."
+					}
+				},
+				"tags": [
+					"Posts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "postId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/posts/{postId}": {
+			"patch": {
+				"operationId": "attachToPost",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AttachmentModel"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": ""
+					},
+					"404": {
+						"description": "Post not found."
+					},
+					"500": {
+						"description": "Could not attach photo to post."
 					}
 				},
 				"tags": [

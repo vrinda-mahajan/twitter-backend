@@ -33,3 +33,8 @@ export interface Reaction {
 export enum ReactionType {
   like = "like",
 }
+
+export interface Attachment {
+  id: string;
+  mimeType: string;
+}
