@@ -7,3 +7,4 @@ export { InvalidMimitypeError } from "./invalid-mimetype-error";
 export { PhotoNotFoundError } from "./photo-not-found-error";
 export { OriginalPostIdMissingError } from "./original-post-id-missing-error";
 export { InvalidInputError } from "./invalid-input-error";
+export { PostNotFoundError } from "./post-not-found-error";
