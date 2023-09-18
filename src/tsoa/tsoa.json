@@ -164,7 +164,6 @@
 					}
 				},
 				"required": [
-					"text",
 					"type"
 				],
 				"type": "object",
@@ -554,6 +553,42 @@
 					},
 					"500": {
 						"description": "Could not attach photo to post."
+					}
+				},
+				"tags": [
+					"Posts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "postId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "deletePost",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PostModel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Post not found."
 					}
 				},
 				"tags": [

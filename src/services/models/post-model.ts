@@ -1,5 +1,5 @@
 export interface CreatePostParams {
-  text: string;
+  text?: string;
   type: string;
   originalPostId?: string;
 }

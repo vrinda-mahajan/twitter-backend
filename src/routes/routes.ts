@@ -88,7 +88,7 @@ const models: TsoaRoute.Models = {
     "CreatePostParams": {
         "dataType": "refObject",
         "properties": {
-            "text": {"dataType":"string","required":true},
+            "text": {"dataType":"string"},
             "type": {"dataType":"string","required":true},
             "originalPostId": {"dataType":"string"},
         },
@@ -406,6 +406,33 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.getPostAttachment.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/api/v1/posts/:postId',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(PostsController)),
+            ...(fetchMiddlewares<RequestHandler>(PostsController.prototype.deletePost)),
+
+            function PostsController_deletePost(request: any, response: any, next: any) {
+            const args = {
+                    postId: {"in":"path","name":"postId","required":true,"dataType":"string"},
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new PostsController();
+
+
+              const promise = controller.deletePost.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

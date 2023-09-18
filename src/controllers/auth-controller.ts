@@ -18,7 +18,7 @@ import {
 } from "../services/models/auth-model";
 import AuthService from "../services/auth-service";
 import { Request as ExpressRequest } from "express";
-import { AuthenticatedUser } from "src/middleware/models/authenticated-users";
+import { AuthenticatedUser } from "../middleware/models/authenticated-users";
 
 @Route("/api/v1/auth")
 @Tags("Auth")

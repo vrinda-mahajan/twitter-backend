@@ -26,7 +26,7 @@ import {
   getAttachmentPhotoName,
   getAttachmentRootDir,
 } from "../controllers/utils";
-import { mkdir, stat } from "node:fs/promises";
+import { mkdir, stat, unlink } from "node:fs/promises";
 export default class PostService {
   public async createPost(
     userId: string,
@@ -169,5 +169,33 @@ export default class PostService {
     } catch {
       throw new AttachmentNotFoundError();
     }
+  }
+
+  public async deletePost(
+    userId: string,
+    postId: string
+  ): Promise<TSOAPostModel> {
+
+    const post = await Post.findOne({ userId:userId, _id:postId });
+    if (!post) {
+      throw new PostNotFoundError();
+    }
+
+    await Post.deleteMany({
+      originalPostId: postId,
+      type: "repost",
+      text: null,
+    });
+
+    const attachmentId = post.attachmentId;
+    if (attachmentId) {
+      const path = getAttachmentPath(attachmentId.toString());
+      try {
+        await unlink(path);
+      } catch {}
+    }
+
+    await Post.findByIdAndDelete(postId);
+    return post.toJSON() as TSOAPostModel;
   }
 }

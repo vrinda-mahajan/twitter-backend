@@ -113,4 +113,18 @@ export class PostsController extends Controller {
       });
     });
   }
+
+  @Delete("/{postId}")
+  @OperationId("deletePost")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.NOT_FOUND, "Post not found.")
+  public async deletePost(
+    @Path() postId: string,
+    @Request() request: ExpressRequest
+  ): Promise<PostModel> {
+    const user = request.user as AuthenticatedUser;
+    const userId = user.id;
+    return new PostService().deletePost(userId, postId);
+  }
 }
