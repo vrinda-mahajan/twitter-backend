@@ -10,3 +10,4 @@ export { InvalidInputError } from "./invalid-input-error";
 export { PostNotFoundError } from "./post-not-found-error";
 export { ReactionNotFoundError } from "./reaction-not-found-error";
 export { InternalServerError } from "./internal-server-error";
+export { AttachmentNotFoundError } from "./attachment-not-found-error";

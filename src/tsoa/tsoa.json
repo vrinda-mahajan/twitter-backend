@@ -576,6 +576,40 @@
 				]
 			}
 		},
+		"/api/v1/posts/attachment/{postId}": {
+			"get": {
+				"operationId": "getPostAttachment",
+				"responses": {
+					"200": {
+						"description": ""
+					},
+					"204": {
+						"description": "No content"
+					},
+					"404": {
+						"description": "Attachment not found."
+					}
+				},
+				"tags": [
+					"Posts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "postId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/v1/profile/info/{userId}": {
 			"get": {
 				"operationId": "getProfile",

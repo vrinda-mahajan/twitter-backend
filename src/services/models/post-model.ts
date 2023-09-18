@@ -38,3 +38,8 @@ export interface Attachment {
   id: string;
   mimeType: string;
 }
+
+export interface PostAttachmentInfo {
+  photoName: string;
+  options: any;
+}

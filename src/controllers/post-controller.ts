@@ -1,4 +1,7 @@
-import { Request as ExpressRequest } from "express";
+import {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 import { StatusCodes } from "http-status-codes";
 import {
   Attachment as AttachmentModel,
@@ -11,6 +14,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   OperationId,
   Patch,
   Path,
@@ -86,5 +90,27 @@ export class PostsController extends Controller {
     const user = request.user as AuthenticatedUser;
     const userId = user.id;
     return new PostService().attachToPost(userId, postId, request as any);
+  }
+
+  @Get("/attachment/{postId}")
+  @OperationId("getPostAttachment")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.NOT_FOUND, "Attachment not found.")
+  public async getPostAttachment(
+    @Path() postId: string,
+    @Request() request: ExpressRequest
+  ): Promise<void> {
+    const photoInfo = await new PostService().getPostAttachment(postId);
+    const response = request.res as ExpressResponse;
+    return new Promise<void>((resolve, reject) => {
+      response.sendFile(photoInfo.photoName, photoInfo.options, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }

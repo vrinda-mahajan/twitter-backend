@@ -1,4 +1,5 @@
 import {
+  AttachmentNotFoundError,
   InternalServerError,
   InvalidInputError,
   InvalidMimitypeError,
@@ -15,12 +16,17 @@ import {
   Reaction as TSOAReactionModel,
   Post as TSOAPostModel,
   Attachment as TSOAAttachmentModel,
+  PostAttachmentInfo,
 } from "./models/post-model";
 import Reaction from "../db/models/reaction";
 import { UploadedFile } from "express-fileupload";
 import Attachment from "../db/models/attachment";
-import { getAttachmentPath, getAttachmentRootDir } from "../controllers/utils";
-import { mkdir } from "node:fs/promises";
+import {
+  getAttachmentPath,
+  getAttachmentPhotoName,
+  getAttachmentRootDir,
+} from "../controllers/utils";
+import { mkdir, stat } from "node:fs/promises";
 export default class PostService {
   public async createPost(
     userId: string,
@@ -106,7 +112,7 @@ export default class PostService {
     if (photo.mimetype !== "image/jpeg") {
       throw new InvalidMimitypeError();
     }
-    
+
     const attachment = await Attachment.create({
       userId,
       postId,
@@ -125,6 +131,43 @@ export default class PostService {
     } catch {
       await Attachment.findByIdAndDelete(attachmentId);
       throw new InternalServerError();
+    }
+  }
+
+  public async getPostAttachment(postId: string): Promise<PostAttachmentInfo> {
+    const post = await Post.findOne({ _id: postId })
+      .where("attachmentId")
+      .ne(null);
+    if (!post) {
+      throw new PostNotFoundError();
+    }
+
+    const attachment = await Attachment.findOne({ _id: post.attachmentId });
+    if (!attachment) {
+      throw new AttachmentNotFoundError();
+    }
+
+    const attachmentId = attachment._id;
+    const photoPath = getAttachmentPath(attachmentId);
+
+    try {
+      const status = await stat(photoPath);
+      const isFile = status.isFile();
+      if (!isFile) {
+        throw new Error();
+      }
+      const photoName = getAttachmentPhotoName(attachmentId);
+      const options = {
+        root: getAttachmentRootDir(),
+        dotfiles: "deny",
+        headers: {
+          "x-timestamp": Date.now(),
+          "x-sent": true,
+        },
+      };
+      return { photoName, options };
+    } catch {
+      throw new AttachmentNotFoundError();
     }
   }
 }
