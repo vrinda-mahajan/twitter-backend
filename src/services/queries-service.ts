@@ -1,6 +1,10 @@
 import Post from "../db/models/post";
 import { PostType, Post as TSOAPostModel } from "./models/post-model";
-import { PostsResponse, QueryPostsParams } from "./models/queries-model";
+import {
+  GetRepliesParams,
+  PostsResponse,
+  QueryPostsParams,
+} from "./models/queries-model";
 
 const { min, max, ceil } = Math;
 
@@ -25,6 +29,33 @@ export default class QueriesService {
     const remainingCount = max(totalPosts - (page + 1) * resultsPerPage, 0);
     const remainingPages = ceil(remainingCount / resultsPerPage);
 
+    return {
+      remainingCount: remainingCount,
+      remainingPages: remainingPages,
+      count: posts.length,
+      posts: posts.map((post) => post.toJSON() as TSOAPostModel),
+    };
+  }
+
+  public async getReplies(params: GetRepliesParams): Promise<PostsResponse> {
+    const postId = params.postId;
+    const resultsPerPage = min(params.resultsPerPage ?? 10, 100);
+    const page = params.page ?? 0;
+
+    const skip = page * resultsPerPage;
+    const type = "reply";
+
+    const posts = await Post.find({ originalPostId: postId, type }, null, {
+      skip: skip,
+      limit: resultsPerPage,
+    });
+    
+    const totalPosts = await Post.countDocuments({
+      originalPostId: postId,
+      type,
+    });
+    const remainingCount = max(totalPosts - (page + 1) * resultsPerPage, 0);
+    const remainingPages = ceil(remainingCount / resultsPerPage);
     return {
       remainingCount: remainingCount,
       remainingPages: remainingPages,

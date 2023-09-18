@@ -13,3 +13,9 @@ export interface PostsResponse {
   count: number;
   posts: Post[];
 }
+
+export interface GetRepliesParams {
+  postId: string;
+  resultsPerPage?: number;
+  page?: number;
+}

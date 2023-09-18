@@ -628,6 +628,34 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/query/replies/:postId',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(QueriesController)),
+            ...(fetchMiddlewares<RequestHandler>(QueriesController.prototype.getReplies)),
+
+            function QueriesController_getReplies(request: any, response: any, next: any) {
+            const args = {
+                    postId: {"in":"path","name":"postId","required":true,"dataType":"string"},
+                    resultsPerPage: {"in":"query","name":"resultsPerPage","dataType":"double"},
+                    page: {"in":"query","name":"page","dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new QueriesController();
+
+
+              const promise = controller.getReplies.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 

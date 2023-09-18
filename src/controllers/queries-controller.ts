@@ -8,6 +8,7 @@ import {
   Controller,
   Get,
   OperationId,
+  Path,
   Query,
   Request,
   Response,
@@ -37,5 +38,18 @@ export class QueriesController extends Controller {
       { userId: resolvedUserId, resultsPerPage, page, type },
       resolvedUserId
     );
+  }
+
+  @Get("/replies/{postId}")
+  @OperationId("getReplies")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.UNAUTHORIZED, "Unauthorized")
+  @Security("jwt")
+  public async getReplies(
+    @Path() postId: string,
+    @Query() resultsPerPage?: number,
+    @Query() page?: number
+  ): Promise<PostsResponse> {
+    return new QueriesService().getReplies({ postId, resultsPerPage, page });
   }
 }
