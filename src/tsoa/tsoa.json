@@ -308,6 +308,60 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"Reaction": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"postId": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/ReactionType"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"postId",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ReactionsResponse": {
+				"properties": {
+					"remainingCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"remainingPages": {
+						"type": "number",
+						"format": "double"
+					},
+					"count": {
+						"type": "number",
+						"format": "double"
+					},
+					"reactions": {
+						"items": {
+							"$ref": "#/components/schemas/Reaction"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"remainingCount",
+					"remainingPages",
+					"count",
+					"reactions"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {
@@ -960,6 +1014,62 @@
 						"in": "path",
 						"name": "postId",
 						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "resultsPerPage",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/query/reactions": {
+			"get": {
+				"operationId": "getReactions",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ReactionsResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					}
+				},
+				"tags": [
+					"Queries"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "userId",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}

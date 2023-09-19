@@ -2,7 +2,10 @@ import { Request as ExpressRequest } from "express";
 import { StatusCodes } from "http-status-codes";
 import { AuthenticatedUser } from "../middleware/models/authenticated-users";
 import { PostType } from "../services/models/post-model";
-import { PostsResponse } from "../services/models/queries-model";
+import {
+  PostsResponse,
+  ReactionsResponse,
+} from "../services/models/queries-model";
 import QueriesService from "../services/queries-service";
 import {
   Controller,
@@ -51,5 +54,24 @@ export class QueriesController extends Controller {
     @Query() page?: number
   ): Promise<PostsResponse> {
     return new QueriesService().getReplies({ postId, resultsPerPage, page });
+  }
+
+  @Get("/reactions")
+  @OperationId("getReactions")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.UNAUTHORIZED, "Unauthorized")
+  public async getReactions(
+    @Request() request: ExpressRequest,
+    @Query() userId?: string,
+    @Query() resultsPerPage?: number,
+    @Query() page?: number
+  ): Promise<ReactionsResponse> {
+    const user = request.user as AuthenticatedUser;
+    const resolvedUserId = userId ?? user.id;
+    return new QueriesService().getReactions(
+      { userId: resolvedUserId, resultsPerPage, page },
+      resolvedUserId
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { Post, PostType } from "./post-model";
+import { Post, PostType, Reaction } from "./post-model";
 
 export interface QueryPostsParams {
   userId?: string;
@@ -18,4 +18,17 @@ export interface GetRepliesParams {
   postId: string;
   resultsPerPage?: number;
   page?: number;
+}
+
+export interface GetUserReactionsParams {
+  userId?: string;
+  resultsPerPage?: number;
+  page?: number;
+}
+
+export interface ReactionsResponse {
+  remainingCount: number;
+  remainingPages: number;
+  count: number;
+  reactions: Reaction[];
 }

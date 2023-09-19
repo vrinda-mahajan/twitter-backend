@@ -1,9 +1,16 @@
+import Reaction from "../db/models/reaction";
 import Post from "../db/models/post";
-import { PostType, Post as TSOAPostModel } from "./models/post-model";
+import {
+  PostType,
+  Post as TSOAPostModel,
+  Reaction as TSOAReactionModel,
+} from "./models/post-model";
 import {
   GetRepliesParams,
+  GetUserReactionsParams,
   PostsResponse,
   QueryPostsParams,
+  ReactionsResponse,
 } from "./models/queries-model";
 
 const { min, max, ceil } = Math;
@@ -49,7 +56,7 @@ export default class QueriesService {
       skip: skip,
       limit: resultsPerPage,
     });
-    
+
     const totalPosts = await Post.countDocuments({
       originalPostId: postId,
       type,
@@ -61,6 +68,35 @@ export default class QueriesService {
       remainingPages: remainingPages,
       count: posts.length,
       posts: posts.map((post) => post.toJSON() as TSOAPostModel),
+    };
+  }
+
+  public async getReactions(
+    params: GetUserReactionsParams,
+    requestUserId: string
+  ): Promise<ReactionsResponse> {
+    const userId = params.userId || requestUserId;
+    const resultsPerPage = min(params.resultsPerPage ?? 10, 100);
+    const page = params.page ?? 0;
+
+    const skip = resultsPerPage * page;
+    const reactions = await Reaction.find({ userId }, null, {
+      skip: skip,
+      limit: resultsPerPage,
+      sort: { createdAt: -1 },
+    });
+
+    const totalReactions = await Reaction.countDocuments({ userId });
+    const remainingCount = max(totalReactions - (page + 1) * resultsPerPage, 0);
+    const remainingPages = ceil(remainingCount / resultsPerPage);
+
+    return {
+      remainingCount: remainingCount,
+      remainingPages: remainingPages,
+      count: reactions.length,
+      reactions: reactions.map(
+        (reaction) => reaction.toJSON() as TSOAReactionModel
+      ),
     };
   }
 }
