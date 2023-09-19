@@ -362,6 +362,29 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"PostStatsResponse": {
+				"properties": {
+					"reactionCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"replyCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"repostCount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"reactionCount",
+					"replyCount",
+					"repostCount"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {
@@ -1090,6 +1113,44 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/query/stats/{postId}": {
+			"get": {
+				"operationId": "getPostStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PostStatsResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					}
+				},
+				"tags": [
+					"Queries"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "postId",
+						"required": true,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]

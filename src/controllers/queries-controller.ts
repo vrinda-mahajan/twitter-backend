@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { AuthenticatedUser } from "../middleware/models/authenticated-users";
 import { PostType } from "../services/models/post-model";
 import {
+  PostStatsResponse,
   PostsResponse,
   ReactionsResponse,
 } from "../services/models/queries-model";
@@ -73,5 +74,16 @@ export class QueriesController extends Controller {
       { userId: resolvedUserId, resultsPerPage, page },
       resolvedUserId
     );
+  }
+
+  @Get("/stats/{postId}")
+  @OperationId("getPostStats")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  @Response(StatusCodes.UNAUTHORIZED, "Unauthorized")
+  public async getPostStats(
+    @Path() postId: string
+  ): Promise<PostStatsResponse> {
+    return new QueriesService().getPostStats(postId);
   }
 }

@@ -32,3 +32,9 @@ export interface ReactionsResponse {
   count: number;
   reactions: Reaction[];
 }
+
+export interface PostStatsResponse {
+  reactionCount: number;
+  replyCount: number;
+  repostCount: number;
+}

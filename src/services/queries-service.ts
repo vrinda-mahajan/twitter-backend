@@ -8,6 +8,7 @@ import {
 import {
   GetRepliesParams,
   GetUserReactionsParams,
+  PostStatsResponse,
   PostsResponse,
   QueryPostsParams,
   ReactionsResponse,
@@ -98,5 +99,18 @@ export default class QueriesService {
         (reaction) => reaction.toJSON() as TSOAReactionModel
       ),
     };
+  }
+
+  public async getPostStats(postId: string): Promise<PostStatsResponse> {
+    const reactionCount = await Reaction.countDocuments({ postId });
+    const replyCount = await Post.countDocuments({
+      originalPostId: postId,
+      type: "reply",
+    });
+    const repostCount = await Post.countDocuments({
+      originalPostId: postId,
+      type: "repost",
+    });
+    return { reactionCount, replyCount, repostCount };
   }
 }
