@@ -29,4 +29,19 @@ export default class FollowService {
 
     return follow.toJSON() as TSOAFollowModel;
   }
+
+  public async unfollowUser(
+    params: FollowUnfollowUserParams
+  ): Promise<TSOAFollowModel> {
+    const { followerUserId: userId, followingUserId } = params;
+    if (userId === followingUserId) {
+      throw new BadRequestError();
+    }
+
+    const deletedFollow = await Follow.findOneAndDelete(params);
+    if (!deletedFollow) {
+      throw new BadRequestError("You are not following this user.");
+    }
+    return deletedFollow.toJSON() as TSOAFollowModel;
+  }
 }

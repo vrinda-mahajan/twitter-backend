@@ -614,6 +614,42 @@
 						}
 					}
 				]
+			},
+			"delete": {
+				"operationId": "unfollowUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Follow"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				},
+				"tags": [
+					"Follow"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/v1/posts": {
