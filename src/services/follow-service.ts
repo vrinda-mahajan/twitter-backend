@@ -2,9 +2,12 @@ import { BadRequestError } from "../errors";
 import {
   Follow as TSOAFollowModel,
   FollowUnfollowUserParams,
+  GetFollowingsOrFollowersUser,
+  FollowsResponse,
 } from "./models/follow-model";
 import Follow from "../db/models/follow";
 
+const { min, max, ceil } = Math;
 export default class FollowService {
   public async followUser(
     params: FollowUnfollowUserParams
@@ -43,5 +46,39 @@ export default class FollowService {
       throw new BadRequestError("You are not following this user.");
     }
     return deletedFollow.toJSON() as TSOAFollowModel;
+  }
+
+  public async getUserFollowing(
+    params: GetFollowingsOrFollowersUser
+  ): Promise<FollowsResponse> {
+    const { userId } = params;
+    const resultsPerPage = min(params.resultsPerPage ?? 10, 100);
+    const page = params.page ?? 0;
+    const skip = resultsPerPage * page;
+
+    const follows = await Follow.find({ followerUserId: userId }, null, {
+      skip: skip,
+      limit: resultsPerPage,
+      sort: { createdAt: -1 },
+    });
+    const totalFollows = await Follow.countDocuments({
+      followerUserId: userId,
+    });
+
+    const remainingCount = max(totalFollows - (page + 1) * resultsPerPage, 0);
+    const remainingPages = ceil(remainingCount / resultsPerPage);
+
+    await Promise.all(
+      follows.map(async (follow) => {
+        await follow.populateFollowingField();
+      })
+    );
+
+    return {
+      remainingCount: remainingCount,
+      remainingPages: remainingPages,
+      count: follows.length,
+      follows: follows.map((follow) => follow.toJSON()),
+    };
   }
 }

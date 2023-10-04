@@ -1,11 +1,13 @@
 import { Request as ExpressRequest } from "express";
-import { Follow } from "../services/models/follow-model";
+import { Follow, FollowsResponse } from "../services/models/follow-model";
 import {
   Controller,
   Delete,
+  Get,
   OperationId,
   Path,
   Post,
+  Query,
   Request,
   Response,
   Route,
@@ -52,6 +54,22 @@ export class FollowController extends Controller {
     return new FollowService().unfollowUser({
       followerUserId,
       followingUserId,
+    });
+  }
+
+  @Get("/{userId}/following")
+  @OperationId("getUserFollowing")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  public async getUserFollowing(
+    @Path() userId: string,
+    @Query() resultsPerPage?: number,
+    @Query() page?: number
+  ): Promise<FollowsResponse> {
+    return new FollowService().getUserFollowing({
+      userId,
+      resultsPerPage,
+      page,
     });
   }
 }

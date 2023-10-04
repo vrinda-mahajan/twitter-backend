@@ -138,6 +138,36 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"FollowsResponse": {
+				"properties": {
+					"remainingCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"remainingPages": {
+						"type": "number",
+						"format": "double"
+					},
+					"count": {
+						"type": "number",
+						"format": "double"
+					},
+					"follows": {
+						"items": {
+							"$ref": "#/components/schemas/Follow"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"remainingCount",
+					"remainingPages",
+					"count",
+					"follows"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"PostType": {
 				"enum": [
 					"post",
@@ -647,6 +677,59 @@
 						"required": true,
 						"schema": {
 							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/follow/{userId}/following": {
+			"get": {
+				"operationId": "getUserFollowing",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FollowsResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Follow"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "resultsPerPage",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
