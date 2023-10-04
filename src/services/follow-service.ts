@@ -81,4 +81,37 @@ export default class FollowService {
       follows: follows.map((follow) => follow.toJSON()),
     };
   }
+
+  public async getUserFollowers(
+    params: GetFollowingsOrFollowersUser
+  ): Promise<FollowsResponse> {
+    const { userId } = params;
+    const resultsPerPage = min(params.resultsPerPage ?? 10, 100);
+    const page = params.page ?? 0;
+    const skip = page * resultsPerPage;
+
+    const followers = await Follow.find({ followingUserId: userId }, null, {
+      limit: resultsPerPage,
+      skip: skip,
+      sort: { createdAt: -1 },
+    });
+    const totalFollowers = await Follow.countDocuments({
+      followingUserId: userId,
+    });
+    const remainingCount = max(totalFollowers - (page + 1) * resultsPerPage, 0);
+    const remainingPages = ceil(remainingCount / resultsPerPage);
+    
+    await Promise.all(
+      followers.map(async (follower) => {
+        await follower.populateFollowerField();
+      })
+    );
+
+    return {
+      remainingCount: remainingCount,
+      remainingPages: remainingPages,
+      count: followers.length,
+      follows: followers.map((follower) => follower.toJSON()),
+    };
+  }
 }

@@ -72,4 +72,20 @@ export class FollowController extends Controller {
       page,
     });
   }
+
+  @Get("/{userId}/followers")
+  @OperationId("getUserFollowers")
+  @Security("jwt")
+  @Response(StatusCodes.OK)
+  public async getUserFollowers(
+    @Path() userId: string,
+    @Query() resultsPerPage?: number,
+    @Query() page?: number
+  ): Promise<FollowsResponse> {
+    return new FollowService().getUserFollowers({
+      userId,
+      resultsPerPage,
+      page,
+    });
+  }
 }

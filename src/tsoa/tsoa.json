@@ -735,6 +735,59 @@
 				]
 			}
 		},
+		"/api/v1/follow/{userId}/followers": {
+			"get": {
+				"operationId": "getUserFollowers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FollowsResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Follow"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "resultsPerPage",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/api/v1/posts": {
 			"post": {
 				"operationId": "createPost",
