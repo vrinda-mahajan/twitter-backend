@@ -2,6 +2,7 @@ import { Request as ExpressRequest } from "express";
 import { StatusCodes } from "http-status-codes";
 import { AuthenticatedUser } from "../middleware/models/authenticated-users";
 import {
+  DeleteUserResponse,
   SetUsernameParams,
   SetUsernameResponse,
 } from "../services/models/user-models";
@@ -9,6 +10,7 @@ import UserService from "../services/user-service";
 import {
   Body,
   Controller,
+  Delete,
   OperationId,
   Post,
   Request,
@@ -17,6 +19,7 @@ import {
   Security,
   Tags,
 } from "tsoa";
+import AuthService from "../services/auth-service";
 
 @Route("/api/v1/user")
 @Tags("User")
@@ -36,5 +39,17 @@ export class UserController extends Controller {
     const { id: userId } = request.user as AuthenticatedUser;
 
     return new UserService().setUsername(userId, params);
+  }
+  @Delete("")
+  @OperationId("deleteUser")
+  @Response(StatusCodes.OK)
+  @Security("jwt")
+  public async deleteUser(
+    @Request() request: ExpressRequest
+  ): Promise<DeleteUserResponse> {
+    const { id: userId, jti } = request.user as AuthenticatedUser;
+    const result = new UserService().deleteUser(userId);
+    await new AuthService().logout(jti);
+    return result;
   }
 }

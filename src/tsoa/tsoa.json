@@ -471,6 +471,44 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"DeleteUserResponse": {
+				"properties": {
+					"reactionsDeleted": {
+						"type": "number",
+						"format": "double"
+					},
+					"postsDeleted": {
+						"type": "number",
+						"format": "double"
+					},
+					"attachmentsDeleted": {
+						"type": "number",
+						"format": "double"
+					},
+					"profilesDeleted": {
+						"type": "number",
+						"format": "double"
+					},
+					"usersDeleted": {
+						"type": "number",
+						"format": "double"
+					},
+					"followsDeleted": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"reactionsDeleted",
+					"postsDeleted",
+					"attachmentsDeleted",
+					"profilesDeleted",
+					"usersDeleted",
+					"followsDeleted"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {
@@ -1460,6 +1498,32 @@
 						}
 					}
 				}
+			}
+		},
+		"/api/v1/user": {
+			"delete": {
+				"operationId": "deleteUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DeleteUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
 			}
 		}
 	},
